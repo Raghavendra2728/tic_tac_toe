@@ -1,12 +1,9 @@
 const cells = document.querySelectorAll(".cell");
 const statusText = document.getElementById("status");
 const restartBtn = document.getElementById("restart");
-
 let board = ["", "", "", "", "", "", "", "", ""];
 let currentPlayer = "X";
 let gameActive = true;
-
-let playerMoves = { "X": [], "O": [] }; 
 
 const winPatterns = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -16,19 +13,10 @@ const winPatterns = [
 
 cells.forEach(cell => {
     cell.addEventListener("click", () => {
-        let index = cell.dataset.index;
-        if (!gameActive || board[index] !== "") return;
+        if (!gameActive || board[cell.dataset.index] !== "") return;
 
-        board[index] = currentPlayer;
-        playerMoves[currentPlayer].push(index);
+        board[cell.dataset.index] = currentPlayer;
         cell.textContent = currentPlayer;
-        cell.classList.add("filled");
-
-        if (playerMoves[currentPlayer].length > 3) {
-            let removedIndex = playerMoves[currentPlayer].shift();
-            board[removedIndex] = "";
-            cells[removedIndex].textContent = "";
-        }
 
         checkWinner();
 
@@ -51,17 +39,19 @@ function checkWinner() {
             return;
         }
     }
+    if (!board.includes("")) {
+        gameActive = false;
+        statusText.textContent = "It's a draw!";
+    }
 }
 
 restartBtn.addEventListener("click", () => {
     board = ["", "", "", "", "", "", "", "", ""];
     gameActive = true;
     currentPlayer = "X";
-    playerMoves = { "X": [], "O": [] };
     statusText.textContent = "Player X's turn";
-    
     cells.forEach(cell => {
         cell.textContent = "";
-        cell.classList.remove("winning", "filled");
+        cell.classList.remove("winning");
     });
 });
